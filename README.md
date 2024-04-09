@@ -1,8 +1,10 @@
 # RobotsWar
-METU NCC AI (CNG462) Assignment 1  
-Using Python 3.12.2
+METU NCC CNG462: Artificial Intelligence Assignment 1  
+Using Python 3.12.2 Interpreter  
+JetBrains PyCharm IDE  
 
-Developers  
+Developers:  
 Yurekce Altin  
-Mahrad Hosseini  
+Mahrad Hosseini
+
 Spring 2023-24

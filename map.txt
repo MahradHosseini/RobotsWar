@@ -1,0 +1,15 @@
+#MapSize:XSize x YSize
+map_size:
+10x9
+white_blocks:
+# YAxisNo:XAxisStartPosition-XAxisEndPosition
+0:0-6
+1:1-4
+2:2-2
+8:2-8
+node_coordinates:
+# NodeName:XCoordinate,YCoordinate
+A:0,0
+B:3,0
+C:2,2
+D:3,8

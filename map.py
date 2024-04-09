@@ -3,12 +3,14 @@ import matplotlib.pyplot as plt
 
 
 def read_map(file_path):
+    # Map config data structure
     config = {
         "map_size": None,
         "white_blocks": {},
         "node_coordinates": {}
     }
 
+    # Reading map detail from the file
     with open(file_path, 'r') as file:
         section = None  # Can be map_size, white_blocks, node_coordinates
 
@@ -17,6 +19,7 @@ def read_map(file_path):
             if not line or line.startswith('#'):  # Skip empty lines and comments
                 continue
 
+            # Finding the sections
             if line.endswith(':'):
                 section = line[:-1]
             elif section == "map_size":
@@ -33,20 +36,22 @@ def read_map(file_path):
     return config
 
 
+# Checks for possible error like missing a section, coordinates out of ranges, nodes not in white blocks, etc
 def map_config_check(config):
+    # Checking all sections' existence
     if not ('white_blocks' in config and 'node_coordinates' in config and 'map_size' in config):
         raise ValueError("Configuration must include white_blocks, map_size, and node_coordinates.")
 
-    # Regular expression for matching the format 'XxY'
-    pattern = re.compile(r"^(\d+)x(\d+)$")
+    # Checking map_size format:
+    pattern = re.compile(r"^(\d+)x(\d+)$")  # Regular expression for matching the format 'XxY'
 
-    if 'map_size' not in config or not pattern.match(config['map_size']):
+    if not pattern.match(config['map_size']):
         raise ValueError("Invalid format for map_size. It should be in 'XxY' format.")
 
     # Extract map dimensions
     max_x, max_y = map(int, pattern.match(config['map_size']).groups())
 
-    # Check white blocks
+    # Check white blocks coordinates
     for row, blocks in config.get('white_blocks', {}).items():
         row_number = int(row)
         if row_number >= max_y:

@@ -57,10 +57,13 @@ def map_config_check(config):
         if row_number >= max_y:
             raise ValueError(f"Row number {row_number} in white_blocks exceeds map height.")
 
-        block_ranges = blocks.split('-')
-        for block_range in block_ranges:
-            if int(block_range) < 0 or int(block_range) >= max_x:
-                raise ValueError(f"Block coordinate {block_range} in row {row} is out of bounds.")
+        block_groups = blocks.split()  # Split by spaces to get groups of block ranges
+        for group in block_groups:
+            block_ranges = group.split()  # Split each group by spaces to get individual block ranges
+            for block_range in block_ranges:
+                start, end = map(int, block_range.split('-'))
+                if start < 0 or end >= max_x:
+                    raise ValueError(f"Block coordinate {block_range} in row {row} is out of bounds.")
 
     # Check node coordinates
     for _, coords in config.get('node_coordinates', {}).items():
@@ -72,15 +75,13 @@ def map_config_check(config):
     white_block_coords = set()
     for row, blocks in config['white_blocks'].items():
         y = int(row)
-        for block_range in blocks.split(','):
-            block_range = block_range.strip()
-            if '-' in block_range:
+        block_groups = blocks.split()  # Split by spaces to get groups of block ranges
+        for group in block_groups:
+            block_ranges = group.split(',')  # Split each group by commas to get individual block ranges
+            for block_range in block_ranges:
                 start, end = map(int, block_range.split('-'))
-            else:
-                start = end = int(block_range)  # If only a single number, start and end are the same
-
-            for x in range(start, end + 1):
-                white_block_coords.add((x, y))
+                for x in range(start, end + 1):
+                    white_block_coords.add((x, y))
 
     # Check each node's coordinates
     for _, coords in config['node_coordinates'].items():
@@ -99,14 +100,17 @@ def draw_map(config):
     # Fill in the white blocks
     for row, blocks in config['white_blocks'].items():
         y = int(row)
-        blocks_ranges = blocks.split(',')
-        for block_range in blocks_ranges:
-            if '-' in block_range:
-                start, end = map(int, block_range.split('-'))
-            else:
-                start = end = int(block_range)
-            for x in range(start, end + 1):
-                map_grid[y][x] = 1  # Set white block
+        block_groups = blocks.split()  # Split by spaces to get groups of block ranges
+        for group in block_groups:
+            block_ranges = group.split(',')  # Split each group by commas to get individual block ranges
+            for block_range in block_ranges:
+                block_range = block_range.strip()
+                if '-' in block_range:
+                    start, end = map(int, block_range.split('-'))
+                else:
+                    start = end = int(block_range)  # If only a single number, start and end are the same
+                for x in range(start, end + 1):
+                    map_grid[y][x] = 1  # Set white block
 
     # Initialize the plot
     fig, ax = plt.subplots()

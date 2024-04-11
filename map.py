@@ -30,9 +30,8 @@ def read_map(file_path):
             elif section == "node_coordinates":
                 node, coordinates = line.split(':')
                 config["node_coordinates"][node] = coordinates
-
-    map_config_check(config)
-    draw_map(config)
+    white_block_coords = map_config_check(config)
+    draw_map(config, white_block_coords)
     return config
 
 
@@ -58,12 +57,10 @@ def map_config_check(config):
             raise ValueError(f"Row number {row_number} in white_blocks exceeds map height.")
 
         block_groups = blocks.split()  # Split by spaces to get groups of block ranges
-        for group in block_groups:
-            block_ranges = group.split()  # Split each group by spaces to get individual block ranges
-            for block_range in block_ranges:
-                start, end = map(int, block_range.split('-'))
-                if start < 0 or end >= max_x:
-                    raise ValueError(f"Block coordinate {block_range} in row {row} is out of bounds.")
+        for block_range in block_groups:
+            start, end = map(int, block_range.split('-'))
+            if start < 0 or end >= max_x:
+                raise ValueError(f"Block coordinate {block_range} in row {row} is out of bounds.")
 
     # Check node coordinates
     for _, coords in config.get('node_coordinates', {}).items():
@@ -89,8 +86,10 @@ def map_config_check(config):
         if (x, y) not in white_block_coords:
             raise ValueError(f"Node coordinate ({x},{y}) is not within the white blocks.")
 
+    return white_block_coords
 
-def draw_map(config):
+
+def draw_map(config, white_block_coords):
     # Parse the map size
     map_size_x, map_size_y = map(int, config['map_size'].split('x'))
 
@@ -98,19 +97,8 @@ def draw_map(config):
     map_grid = [[0 for _ in range(map_size_x)] for _ in range(map_size_y)]
 
     # Fill in the white blocks
-    for row, blocks in config['white_blocks'].items():
-        y = int(row)
-        block_groups = blocks.split()  # Split by spaces to get groups of block ranges
-        for group in block_groups:
-            block_ranges = group.split(',')  # Split each group by commas to get individual block ranges
-            for block_range in block_ranges:
-                block_range = block_range.strip()
-                if '-' in block_range:
-                    start, end = map(int, block_range.split('-'))
-                else:
-                    start = end = int(block_range)  # If only a single number, start and end are the same
-                for x in range(start, end + 1):
-                    map_grid[y][x] = 1  # Set white block
+    for (x, y) in white_block_coords:
+        map_grid[y][x] = 1  # Set white block
 
     # Initialize the plot
     fig, ax = plt.subplots()

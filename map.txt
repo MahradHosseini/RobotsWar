@@ -3,13 +3,11 @@ map_size:
 10x9
 white_blocks:
 # YAxisNo:XAxisStartPosition-XAxisEndPosition
-0:0-3 3-4
-1:6-6 8-8
-2:2-2 4-6 7-8
-8:2-8
+0:0-3
+1:0-3
+2:5-5 2-2
 node_coordinates:
 # NodeName:XCoordinate,YCoordinate
 A:0,0
-B:3,0
-C:2,2
-D:3,8
+
+

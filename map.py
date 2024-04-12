@@ -32,7 +32,7 @@ def read_map(file_path):
                 config["node_coordinates"][node] = coordinates
     white_block_coords = map_config_check(config)
     draw_map(config, white_block_coords)
-    return config
+    return white_block_coords
 
 
 # Checks for possible error like missing a section, coordinates out of ranges, nodes not in white blocks, etc

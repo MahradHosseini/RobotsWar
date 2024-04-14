@@ -11,22 +11,22 @@ def manhattan_distance(node1, node2):
 
 
 def init_graph(graph, config):
-    for (x, y) in white_block_coords:
+    for (x, y) in config['white_blocks']:
         node = (x, y)
-        if node in named_nodes:
-            graph.add_node(node, Name=named_nodes(node).Name)
+        if node in config['node_coordinates'].items():
+            graph.add_node(node, Name=config['node_coordinates'].items()(node).Name)
         else:
             graph.add_node(node)
-        if (x, y + 1) in white_block_coords:
+        if (x, y + 1) in config['white_blocks']:
             node1 = (x, y + 1)
-            if node1 in named_nodes:
-                graph.add_node(node, node1, Name=named_nodes(node1).Name)
+            if node1 in config['node_coordinates']:
+                graph.add_node(node, node1, Name=config['node_coordinates'].items()(node1).Name)
             else:
                 graph.add_edge(node, node1)
-        if (x + 1, y) in white_block_coords:
+        if (x + 1, y) in config['white_blocks']:
             node1 = (x + 1, y)
-            if node1 in named_nodes:
-                graph.add_node(node, node1, Name=named_nodes(node1).Name)
+            if node1 in config['node_coordinates']:
+                graph.add_node(node, node1, Name=config['node_coordinates'].items()(node1).Name)
             else:
                 graph.add_edge(node, node1)
 

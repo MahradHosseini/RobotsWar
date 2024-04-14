@@ -1,9 +1,6 @@
-import math
-from collections import deque
 import matplotlib.pyplot as plt
 import networkx as nx
-import numpy as np
-from queue import PriorityQueue, Queue
+from queue import PriorityQueue
 
 
 def manhattan_distance(node1, node2):

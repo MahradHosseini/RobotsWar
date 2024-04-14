@@ -31,7 +31,7 @@ def read_map(file_path):
                 node, coordinates = line.split(':')
                 config["node_coordinates"][node] = coordinates
     white_block_coords = map_config_check(config)
-    draw_map(config, white_block_coords)
+    draw_map(config)
     return white_block_coords
 
 
@@ -49,6 +49,7 @@ def map_config_check(config):
 
     # Extract map dimensions
     max_x, max_y = map(int, pattern.match(config['map_size']).groups())
+    config['map_size'] = (max_x, max_y)
 
     # Check white blocks coordinates
     for row, blocks in config.get('white_blocks', {}).items():
@@ -63,7 +64,7 @@ def map_config_check(config):
                 raise ValueError(f"Block coordinate {block_range} in row {row} is out of bounds.")
 
     # Check node coordinates
-    for _, coords in config.get('node_coordinates', {}).items():
+    for node, coords in config.get('node_coordinates', {}).items():
         x, y = map(int, coords.split(','))
         if x < 0 or x >= max_x or y < 0 or y >= max_y:
             raise ValueError(f"Node coordinate ({x},{y}) is out of bounds.")
@@ -80,42 +81,47 @@ def map_config_check(config):
                 for x in range(start, end + 1):
                     white_block_coords.add((x, y))
 
+    config['white_blocks'] = white_block_coords
+
+    nodes = set()
     # Check each node's coordinates
-    for _, coords in config['node_coordinates'].items():
+    for node, coords in config['node_coordinates'].items():
         x, y = map(int, coords.split(','))
         if (x, y) not in white_block_coords:
             raise ValueError(f"Node coordinate ({x},{y}) is not within the white blocks.")
+        else:
+            nodes.add((node, (x, y)))
 
-    return white_block_coords
+    config['node_coordinates'] = {node: (x, y) for node, (x, y) in nodes}
+
+    return config
 
 
-def draw_map(config, white_block_coords):
-    # Parse the map size
-    map_size_x, map_size_y = map(int, config['map_size'].split('x'))
-
+def draw_map(config):
+    x_size, y_size = config['map_size']
     # Create a black map with the given size
-    map_grid = [[0 for _ in range(map_size_x)] for _ in range(map_size_y)]
+    map_grid = [[0 for _ in range(x_size)] for _ in range(y_size)]
 
     # Fill in the white blocks
-    for (x, y) in white_block_coords:
+    for (x, y) in config['white_blocks']:
         map_grid[y][x] = 1  # Set white block
 
     # Initialize the plot
     fig, ax = plt.subplots()
-    ax.set_xlim(0, map_size_x)
-    ax.set_ylim(0, map_size_y)
-    ax.set_xticks(range(map_size_x + 1))
-    ax.set_yticks(range(map_size_y + 1))
+    ax.set_xlim(0, x_size)
+    ax.set_ylim(0, y_size)
+    ax.set_xticks(range(x_size + 1))
+    ax.set_yticks(range(y_size + 1))
     plt.grid(which='both', color='black', linestyle='-', linewidth=1)
 
     # Plot the nodes
     for node, coordinates in config['node_coordinates'].items():
-        x, y = map(int, coordinates.split(','))
+        x, y = map(int, coordinates)
         ax.text(x + 0.5, y + 0.5, node, va='center', ha='center')
 
     # Color the blocks
-    for y in range(map_size_y):
-        for x in range(map_size_x):
+    for y in range(y_size):
+        for x in range(x_size):
             color = 'white' if map_grid[y][x] == 1 else 'black'
             rect = plt.Rectangle((x, y), 1, 1, color=color)
             ax.add_patch(rect)

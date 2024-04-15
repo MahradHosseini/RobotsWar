@@ -37,7 +37,7 @@ def init_graph(graph, config):
 def a_star_search(initial_state, goal_state, graph):
     queue = PriorityQueue()                 # define a queue
     queue.put((0, [initial_state]))         # we put initial state with 0 f in the queue
-    while not queue.empty:                  # while
+    while not queue.empty():                  # while
         path = queue.get()[1]               # getting 2nd element
         current_state = path[-1]            # current_state is lastly added element
         if current_state == goal_state:     # if it is goal_state
@@ -57,7 +57,7 @@ def a_star_search(initial_state, goal_state, graph):
 
 
 def successors(state, graph):
-    x, y = state.x, state.y
+    x, y = state
     successor = []
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]             # covering every direction
     for xx, yy in directions:                                   # going over directions

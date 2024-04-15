@@ -9,5 +9,8 @@ white_blocks:
 node_coordinates:
 # NodeName:XCoordinate,YCoordinate
 A:0,0
+B:2,1
+C:0,1
+D:1,1
 
 

@@ -30,12 +30,13 @@ def read_map(file_path):
             elif section == "node_coordinates":
                 node, coordinates = line.split(':')
                 config["node_coordinates"][node] = coordinates
-    white_block_coords = map_config_check(config)
+    config = map_config_check(config)
     draw_map(config)
-    return white_block_coords
+    return config
 
 
 # Checks for possible error like missing a section, coordinates out of ranges, nodes not in white blocks, etc
+# Also converts white block and node input from txt file to (x,y) coordinates
 def map_config_check(config):
     # Checking all sections' existence
     if not ('white_blocks' in config and 'node_coordinates' in config and 'map_size' in config):

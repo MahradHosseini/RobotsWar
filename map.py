@@ -30,13 +30,13 @@ def read_map(file_path):
             elif section == "node_coordinates":
                 node, coordinates = line.split(':')
                 config["node_coordinates"][node] = coordinates
-
-    map_config_check(config)
+    config = map_config_check(config)
     draw_map(config)
     return config
 
 
 # Checks for possible error like missing a section, coordinates out of ranges, nodes not in white blocks, etc
+# Also converts white block and node input from txt file to (x,y) coordinates
 def map_config_check(config):
     # Checking all sections' existence
     if not ('white_blocks' in config and 'node_coordinates' in config and 'map_size' in config):
@@ -50,6 +50,7 @@ def map_config_check(config):
 
     # Extract map dimensions
     max_x, max_y = map(int, pattern.match(config['map_size']).groups())
+    config['map_size'] = (max_x, max_y)
 
     # Check white blocks coordinates
     for row, blocks in config.get('white_blocks', {}).items():
@@ -57,13 +58,14 @@ def map_config_check(config):
         if row_number >= max_y:
             raise ValueError(f"Row number {row_number} in white_blocks exceeds map height.")
 
-        block_ranges = blocks.split('-')
-        for block_range in block_ranges:
-            if int(block_range) < 0 or int(block_range) >= max_x:
+        block_groups = blocks.split()  # Split by spaces to get groups of block ranges
+        for block_range in block_groups:
+            start, end = map(int, block_range.split('-'))
+            if start < 0 or end >= max_x:
                 raise ValueError(f"Block coordinate {block_range} in row {row} is out of bounds.")
 
     # Check node coordinates
-    for _, coords in config.get('node_coordinates', {}).items():
+    for node, coords in config.get('node_coordinates', {}).items():
         x, y = map(int, coords.split(','))
         if x < 0 or x >= max_x or y < 0 or y >= max_y:
             raise ValueError(f"Node coordinate ({x},{y}) is out of bounds.")
@@ -72,58 +74,55 @@ def map_config_check(config):
     white_block_coords = set()
     for row, blocks in config['white_blocks'].items():
         y = int(row)
-        for block_range in blocks.split(','):
-            block_range = block_range.strip()
-            if '-' in block_range:
+        block_groups = blocks.split()  # Split by spaces to get groups of block ranges
+        for group in block_groups:
+            block_ranges = group.split(',')  # Split each group by commas to get individual block ranges
+            for block_range in block_ranges:
                 start, end = map(int, block_range.split('-'))
-            else:
-                start = end = int(block_range)  # If only a single number, start and end are the same
+                for x in range(start, end + 1):
+                    white_block_coords.add((x, y))
 
-            for x in range(start, end + 1):
-                white_block_coords.add((x, y))
+    config['white_blocks'] = white_block_coords
 
+    nodes = set()
     # Check each node's coordinates
-    for _, coords in config['node_coordinates'].items():
+    for node, coords in config['node_coordinates'].items():
         x, y = map(int, coords.split(','))
         if (x, y) not in white_block_coords:
             raise ValueError(f"Node coordinate ({x},{y}) is not within the white blocks.")
+        else:
+            nodes.add((node, (x, y)))
+
+    config['node_coordinates'] = {node: (x, y) for node, (x, y) in nodes}
+
+    return config
 
 
 def draw_map(config):
-    # Parse the map size
-    map_size_x, map_size_y = map(int, config['map_size'].split('x'))
-
+    x_size, y_size = config['map_size']
     # Create a black map with the given size
-    map_grid = [[0 for _ in range(map_size_x)] for _ in range(map_size_y)]
+    map_grid = [[0 for _ in range(x_size)] for _ in range(y_size)]
 
     # Fill in the white blocks
-    for row, blocks in config['white_blocks'].items():
-        y = int(row)
-        blocks_ranges = blocks.split(',')
-        for block_range in blocks_ranges:
-            if '-' in block_range:
-                start, end = map(int, block_range.split('-'))
-            else:
-                start = end = int(block_range)
-            for x in range(start, end + 1):
-                map_grid[y][x] = 1  # Set white block
+    for (x, y) in config['white_blocks']:
+        map_grid[y][x] = 1  # Set white block
 
     # Initialize the plot
     fig, ax = plt.subplots()
-    ax.set_xlim(0, map_size_x)
-    ax.set_ylim(0, map_size_y)
-    ax.set_xticks(range(map_size_x + 1))
-    ax.set_yticks(range(map_size_y + 1))
+    ax.set_xlim(0, x_size)
+    ax.set_ylim(0, y_size)
+    ax.set_xticks(range(x_size + 1))
+    ax.set_yticks(range(y_size + 1))
     plt.grid(which='both', color='black', linestyle='-', linewidth=1)
 
     # Plot the nodes
     for node, coordinates in config['node_coordinates'].items():
-        x, y = map(int, coordinates.split(','))
+        x, y = map(int, coordinates)
         ax.text(x + 0.5, y + 0.5, node, va='center', ha='center')
 
     # Color the blocks
-    for y in range(map_size_y):
-        for x in range(map_size_x):
+    for y in range(y_size):
+        for x in range(x_size):
             color = 'white' if map_grid[y][x] == 1 else 'black'
             rect = plt.Rectangle((x, y), 1, 1, color=color)
             ax.add_patch(rect)

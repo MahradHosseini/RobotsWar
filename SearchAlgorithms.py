@@ -38,7 +38,6 @@ def init_graph(config):
 def a_star_search(initial_state, goal_state, graph):
     queue = PriorityQueue()  # define a queue
     queue.put((0, [initial_state]))  # we put initial state with 0 f in the queue
-    print(queue.qsize())
     while queue.qsize() != 0:  # while
         path = queue.get()[1]  # getting 2nd element
         current_state = path[-1]  # current_state is lastly added element

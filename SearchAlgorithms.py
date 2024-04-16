@@ -1,4 +1,7 @@
+from collections import deque
 from queue import PriorityQueue
+
+import networkx as nx
 
 
 def a_star_search(initial_state, goal_state, graph):
@@ -21,6 +24,31 @@ def a_star_search(initial_state, goal_state, graph):
                 queue.put((f, new_path))  # new path to the queue
 
     return None  # return failure
+
+
+def depth_first_search(initial_state, graph):
+    stack = deque([[initial_state]])
+
+    while stack:
+        path = stack.pop()
+        current_node = path[-1]
+
+        if len(path) > 1 and current_node == initial_state and len(set(path)) == len(graph.nodes()):
+            return path
+
+        neighbors = list(nx.neighbors(graph, current_node))
+
+        for neighbor in neighbors:
+            if neighbor not in path or (neighbor == initial_state and len(set(path)) == len(graph.nodes())):
+                new_path = list(path) + [neighbor]
+                stack.append(new_path)
+
+    return None
+
+
+def is_dfs_goal_state(graph, tour):
+    nodes = set(graph.nodes())
+    return nodes <= set(tour) and tour[0] == tour[-1]
 
 
 def successors(state, graph):

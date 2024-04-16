@@ -16,10 +16,22 @@ if __name__ == '__main__':
         path = a_star_search(node1_coord, node2_coord, main_graph)
         if path:
             num_hops = len(path) - 1
-            print(f"{node1_id} -> {node2_id}: Num of hops = {num_hops}, Path found: {path}")
+            print(f"{node1_id} -> {node2_id}: Distance = {num_hops}, Path found: {path}")
             shortest_path.append((node1_id, node2_id, num_hops))
         else:
             print(f"{node1_id} -> {node2_id}: No path found")
             shortest_path.append((node1_id, node2_id, None))
 
     node_graph = init_node_graph(shortest_path)
+
+    if 'A' not in nodes:
+        raise ValueError("Node 'A' not found in the list of nodes.")
+
+    initial_state = 'A'
+
+    dfs_tour = depth_first_search(initial_state, node_graph)
+    print("Tour sequence using Depth-First Search:")
+    print(' -> '.join(dfs_tour))
+
+
+

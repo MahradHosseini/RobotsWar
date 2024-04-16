@@ -1,38 +1,4 @@
-import matplotlib.pyplot as plt
-import networkx as nx
 from queue import PriorityQueue
-
-
-# Takes the map config as input and converts the map into a graph
-# Each node represents a white block
-# Each edge represents an adjacency between the white blocks
-def init_graph(config):
-    graph = nx.Graph()
-    for (x, y) in config['white_blocks']:
-        node = (x, y)
-        if node in config['node_coordinates'].items():
-            graph.add_node(node, Name=config['node_coordinates'].items()(node).Name)
-        else:
-            graph.add_node(node)
-        if (x, y + 1) in config['white_blocks']:
-            node1 = (x, y + 1)
-            if node1 in config['node_coordinates']:
-                graph.add_node(node1, Name=config['node_coordinates'].items()(node1).Name)
-            else:
-                graph.add_edge(node, node1)
-        if (x + 1, y) in config['white_blocks']:
-            node1 = (x + 1, y)
-            if node1 in config['node_coordinates']:
-                graph.add_node(node1, Name=config['node_coordinates'].items()(node1).Name)
-            else:
-                graph.add_edge(node, node1)
-
-    nx.draw(graph, with_labels=True, node_color="red", node_size=1000, font_color="white", font_size=10,
-            font_family="Times New Roman", font_weight="bold", width=5, edge_color="black")
-    plt.margins(0.2)
-    plt.show()
-    plt.savefig('mainGraph.jpg')
-    return graph
 
 
 def a_star_search(initial_state, goal_state, graph):

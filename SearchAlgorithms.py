@@ -46,9 +46,26 @@ def depth_first_search(initial_state, graph):
     return None
 
 
-def is_dfs_goal_state(graph, tour):
-    nodes = set(graph.nodes())
-    return nodes <= set(tour) and tour[0] == tour[-1]
+def uniform_cost_search(initial_state, graph):
+    queue = PriorityQueue()
+    queue.put((0, [initial_state]))
+
+    while not queue.empty():
+        cost, path = queue.get()
+        terminal_node = path[-1]
+        if is_goal_state(graph, path):
+            return path, cost
+
+        for neighbor in graph.neighbors(terminal_node):
+            if neighbor not in path or (neighbor == initial_state and len(set(path)) == len(graph.nodes())):
+                new_cost = cost + graph[terminal_node][neighbor]['weight']
+                new_path = path + [neighbor]
+                queue.put((new_cost, new_path))
+    return None, None
+
+
+def is_goal_state(graph, tour):
+    return set(tour) == set(graph.nodes()) and tour[0] == tour[-1]
 
 
 def successors(state, graph):

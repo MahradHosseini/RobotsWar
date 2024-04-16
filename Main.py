@@ -5,7 +5,7 @@ from Graphs import *
 
 if __name__ == '__main__':
     config = read_map("map.txt")
-    print(config)
+    #print(config)
     main_graph = init_main_graph(config)
 
     nodes = config['node_coordinates']
@@ -31,7 +31,17 @@ if __name__ == '__main__':
 
     dfs_tour = depth_first_search(initial_state, node_graph)
     print("Tour sequence using Depth-First Search:")
-    print(' -> '.join(dfs_tour))
+    if dfs_tour is None:
+        print("No such a tour found")
+    else:
+        print(' -> '.join(dfs_tour))
+
+    ucs_tour, ucs_cost = uniform_cost_search(initial_state, node_graph)
+    print("Tour sequence using Uniform Cost Search:")
+    if ucs_tour is None or ucs_cost is None:
+        print("No such a tour found")
+    else:
+        print(f"{' -> '.join(ucs_tour)} with cost = {ucs_cost}")
 
 
 

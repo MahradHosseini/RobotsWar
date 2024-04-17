@@ -1,6 +1,10 @@
 import re
 import matplotlib.pyplot as plt
 
+"""
+Reads the map from the provided path
+"""
+
 
 def read_map(file_path):
     # Map config data structure
@@ -19,7 +23,7 @@ def read_map(file_path):
             if not line or line.startswith('#'):  # Skip empty lines and comments
                 continue
 
-            # Finding the sections
+            # Finding the sections and extracting data
             if line.endswith(':'):
                 section = line[:-1]
             elif section == "map_size":
@@ -30,13 +34,19 @@ def read_map(file_path):
             elif section == "node_coordinates":
                 node, coordinates = line.split(':')
                 config["node_coordinates"][node] = coordinates
+    # Sending the extracted data to be checked
     config = map_config_check(config)
+    # Visualizing the map
     draw_map(config)
     return config
 
 
-# Checks for possible error like missing a section, coordinates out of ranges, nodes not in white blocks, etc
-# Also converts white block and node input from txt file to (x,y) coordinates
+"""
+Checks for major possible error like missing a section, coordinates out of ranges, nodes not in white blocks, etc.
+Also converts white block and node input from txt file to (x,y) coordinates
+"""
+
+
 def map_config_check(config):
     # Checking all sections' existence
     if not ('white_blocks' in config and 'node_coordinates' in config and 'map_size' in config):
@@ -84,8 +94,8 @@ def map_config_check(config):
 
     config['white_blocks'] = white_block_coords
 
-    nodes = set()
     # Check each node's coordinates
+    nodes = set()
     for node, coords in config['node_coordinates'].items():
         x, y = map(int, coords.split(','))
         if (x, y) not in white_block_coords:
@@ -96,6 +106,11 @@ def map_config_check(config):
     config['node_coordinates'] = {node: (x, y) for node, (x, y) in nodes}
 
     return config
+
+
+"""
+Draws a map with white blocks and node coordinates.
+"""
 
 
 def draw_map(config):

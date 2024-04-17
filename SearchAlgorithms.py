@@ -1,7 +1,12 @@
 from collections import deque
 from queue import PriorityQueue
-
 import networkx as nx
+
+"""
+Implementation of the A* Search Algorithm
+Takes a starting state, a goal state, and a graph
+Returns the path with minimum distance, or None if no path exists
+"""
 
 
 def a_star_search(initial_state, goal_state, graph):
@@ -26,19 +31,31 @@ def a_star_search(initial_state, goal_state, graph):
     return None  # return failure
 
 
+"""
+Implementation of the Depth First Search Algorithm
+Takes a starting state and a graph
+Returns the first path found or None if no path exists
+"""
+
+
 def depth_first_search(initial_state, graph):
+    # Using stack
     stack = deque([[initial_state]])
 
     while stack:
+        # Poping from Stack
         path = stack.pop()
         current_node = path[-1]
 
         if len(path) > 1 and current_node == initial_state and len(set(path)) == len(graph.nodes()):
             return path
 
+        # Creating a list of neighbor nodes
         neighbors = list(nx.neighbors(graph, current_node))
 
         for neighbor in neighbors:
+            # If there is an unvisited node, or
+            # If returns back to initial point and all the nodes are visited
             if neighbor not in path or (neighbor == initial_state and len(set(path)) == len(graph.nodes())):
                 new_path = list(path) + [neighbor]
                 stack.append(new_path)
@@ -46,17 +63,29 @@ def depth_first_search(initial_state, graph):
     return None
 
 
+"""
+Implementation of the Uniform-Cost Search Algorithm
+Takes a starting state and a graph
+Returns the best path found with minimum cost or None if no path exists
+"""
+
+
 def uniform_cost_search(initial_state, graph):
+    # Using Priority Queue with Cost as the evaluating value
     queue = PriorityQueue()
     queue.put((0, [initial_state]))
 
     while not queue.empty():
+        # Pop from the Queue
         cost, path = queue.get()
         terminal_node = path[-1]
+        # If goal state is found, return
         if is_goal_state(graph, path):
             return path, cost
 
         for neighbor in graph.neighbors(terminal_node):
+            # If there is an unvisited node, or
+            # If returns back to initial point and all the nodes are visited
             if neighbor not in path or (neighbor == initial_state and len(set(path)) == len(graph.nodes())):
                 new_cost = cost + graph[terminal_node][neighbor]['weight']
                 new_path = path + [neighbor]
@@ -64,8 +93,22 @@ def uniform_cost_search(initial_state, graph):
     return None, None
 
 
+"""
+Checks if a state is a valid goal state for UCS
+Takes the graph and the current found path
+Returns true if the state is a valid goal state, false otherwise
+"""
+
+
 def is_goal_state(graph, tour):
+    # If the nodes in path are equal to all nodes of the graph, and
+    # If first and last nodes are the same (initial_node)
     return set(tour) == set(graph.nodes()) and tour[0] == tour[-1]
+
+
+"""
+Creates a list of node's successors
+"""
 
 
 def successors(state, graph):
@@ -79,7 +122,11 @@ def successors(state, graph):
     return successor
 
 
-# Finds manhattan distance between two points (x1,y1) and (x2,y2)
+"""
+Finds manhattan distance between two points (x1,y1) and (x2,y2)
+"""
+
+
 def manhattan_distance(node1, node2):
     # |
     # |

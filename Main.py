@@ -5,7 +5,6 @@ from Graphs import *
 
 if __name__ == '__main__':
     config = read_map("map.txt")
-    #print(config)
     main_graph = init_main_graph(config)
 
     nodes = config['node_coordinates']

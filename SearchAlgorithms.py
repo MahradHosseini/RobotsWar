@@ -7,7 +7,7 @@ import networkx as nx
 def a_star_search(initial_state, goal_state, graph):
     queue = PriorityQueue()  # define a queue
     queue.put((0, [initial_state]))  # we put initial state with 0 f in the queue
-    while queue.qsize() != 0:  # while
+    while queue.qsize() != 0:  # while not empty
         path = queue.get()[1]  # getting 2nd element
         current_state = path[-1]  # current_state is lastly added element
         if current_state == goal_state:  # if it is goal_state

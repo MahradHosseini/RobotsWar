@@ -26,9 +26,9 @@ def init_main_graph(config):
             else:
                 graph.add_edge(node, node1)
 
-    nx.draw(graph, with_labels=True, node_color="red", node_size=1000, font_color="white", font_size=10,
+    nx.draw(graph, with_labels=True, node_color="red", node_size=750, font_color="white", font_size=10,
             font_family="Times New Roman", font_weight="bold", width=5, edge_color="black")
-    plt.margins(0.2)
+    plt.margins(0.1)
     plt.savefig('mainGraph.jpg')
     plt.show()
     return graph

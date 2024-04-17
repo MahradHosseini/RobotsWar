@@ -79,6 +79,10 @@ def successors(state, graph):
     return successor
 
 
-# Finds absolute distance between two points (x1,y1) and (x2,y2)
+# Finds manhattan distance between two points (x1,y1) and (x2,y2)
 def manhattan_distance(node1, node2):
+    # |
+    # |
+    # |________   this is how it works
     return abs(node1[0] - node2[0]) + abs(node1[1] - node2[1])
+    # x coordinate - x coordinate + y coordinate - y coordinate

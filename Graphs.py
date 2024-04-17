@@ -10,19 +10,19 @@ def init_main_graph(config):
     for (x, y) in config['white_blocks']:
         node = (x, y)
         if node in config['node_coordinates'].items():
-            graph.add_node(node)
+            graph.add_node(node)                            # add the node with Name= component
         else:
             graph.add_node(node)
-        if (x, y + 1) in config['white_blocks']:
+        if (x, y + 1) in config['white_blocks']:            # we check its neighbours
             node1 = (x, y + 1)
             if node1 in config['node_coordinates']:
-                graph.add_node(node1)
+                graph.add_node(node1)                       # add the node with Name= component
             else:
                 graph.add_edge(node, node1)
         if (x + 1, y) in config['white_blocks']:
             node1 = (x + 1, y)
             if node1 in config['node_coordinates']:
-                graph.add_node(node1)
+                graph.add_node(node1)                       # add the node with Name= component
             else:
                 graph.add_edge(node, node1)
 

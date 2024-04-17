@@ -1,28 +1,31 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
+"""
+Takes the map config as input and converts the map into a graph
+Each node represents a white block
+Each edge represents an adjacency between the white blocks
+"""
 
-# Takes the map config as input and converts the map into a graph
-# Each node represents a white block
-# Each edge represents an adjacency between the white blocks
+
 def init_main_graph(config):
     graph = nx.Graph()
     for (x, y) in config['white_blocks']:
         node = (x, y)
         if node in config['node_coordinates'].items():
-            graph.add_node(node)                            # add the node with Name= component
+            graph.add_node(node)  # add the node with Name= component
         else:
             graph.add_node(node)
-        if (x, y + 1) in config['white_blocks']:            # we check its neighbours
+        if (x, y + 1) in config['white_blocks']:  # we check its neighbours
             node1 = (x, y + 1)
             if node1 in config['node_coordinates']:
-                graph.add_node(node1)                       # add the node with Name= component
+                graph.add_node(node1)  # add the node with Name= component
             else:
                 graph.add_edge(node, node1)
         if (x + 1, y) in config['white_blocks']:
             node1 = (x + 1, y)
             if node1 in config['node_coordinates']:
-                graph.add_node(node1)                       # add the node with Name= component
+                graph.add_node(node1)  # add the node with Name= component
             else:
                 graph.add_edge(node, node1)
 
@@ -34,17 +37,27 @@ def init_main_graph(config):
     return graph
 
 
+"""
+Creates a node graph based on the shortest paths between nodes
+Takes in a list of shortest paths between nodes
+Returns a node graph
+"""
+
+
 def init_node_graph(shortest_path):
     node_graph = nx.Graph()
 
+    # Adding the nodes and the edges
     for pair in shortest_path:
         node1, node2, distance = pair
+        # If distance is None means that the node is disconnected
         if distance is not None:
             node_graph.add_edge(node1, node2, weight=distance)
         else:
             node_graph.add_node(node1)
             node_graph.add_node(node2)
 
+    # Checks for the connectivity of the constructed graph
     if not nx.is_connected(node_graph):
         raise ValueError('The graph you have provided is not fully connected')
 
